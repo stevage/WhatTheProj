@@ -1,19 +1,18 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <Guesser></Guesser>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
+import Guesser from './components/Guesser.vue'
+const app = {
   name: 'app',
-  components: {
-    HelloWorld
+  mounted () {
+    window.app = this;
+  }, components: {
+    Guesser
   }
 }
+export default app;
 </script>
 
 <style>
@@ -24,5 +23,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+button {
+  margin:3em;
+  padding:3em;
 }
 </style>
