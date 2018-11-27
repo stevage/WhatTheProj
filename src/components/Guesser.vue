@@ -15,7 +15,7 @@
     <label>Latitude: </label><input type="text" v-model="lat" v-on:change="change">
     <br>
     <div id="submit" v-on:click="guess" v-show="x && y && lon && lat">
-      <b>Guess!</b>
+      <a href="#"><b>Guess!</b></a>
     </div>
     <div v-if="status === 'failed'" id="result">
         Oh dear. I have no idea.
@@ -84,14 +84,6 @@ export default {
 h3 {
   margin: 40px 0 0;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
 a {
   color: #42b983;
 }
@@ -102,15 +94,16 @@ a {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  /* margin-top: 60px; */
+  font-size:16pt;
 }
 
 
 #submit {
   padding:1em;
   cursor:pointer;
-  color:darkblue;
-  text-decoration:underline;
+  /* color:darkblue; */
+  /* text-decoration:underline; */
   font-size:20pt;
   
 }

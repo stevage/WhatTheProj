@@ -1,5 +1,12 @@
 <template>
-  <Guesser></Guesser>
+  <div id="app">
+    <Guesser></Guesser>
+    <div id="footer">
+      Built by Steve Bennett (<a href="https://twitter.com/stevage1/">@Stevage1</a>)
+      <br>
+      <a href="http://hire.stevebennett.me/">hire.stevebennett.me</a>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -28,5 +35,9 @@ export default app;
 button {
   margin:3em;
   padding:3em;
+}
+
+#footer {
+  margin-top:2em;
 }
 </style>
