@@ -1,40 +1,49 @@
-<template>
-  <div id="guesser">
-    <h1>What the proj?</h1>
-    <div class="preamble">Do you have a Shapefile with no projection information? A GeoJSON with no CRS?
-        <br>
-        WhatTheProj can help you  guess the projection for a given point.
-    </div>
-    <h4>Someone gave me this projected coordinate:</h4>
-    <label>X: </label><input type="text" v-model="x" v-on:change="change"><br>
-    <label>Y: </label><input type="text" v-model="y" v-on:change="change">
-    <br><br>
-
-    <h4>I think it <i>should</i> be somewhere near: <br></h4>
-    <label>Longitude: </label><input type="text" v-model="lon" v-on:change="change"><br>
-    <label>Latitude: </label><input type="text" v-model="lat" v-on:change="change">
-    <br>
-    <div id="submit" v-on:click="guess" v-show="x && y && lon && lat">
-      <a href="#"><b>Guess!</b></a>
-    </div>
-    <div v-if="status === 'failed'" id="result">
-        Oh dear. I have no idea.
-    </div>
-    <div v-if="status === 'thinking'" id="result">
-        Thinking!
-    </div>
-    <div v-if="status === 'found'" id="result">
-        It might be...
-        <div class="projection">
-            <a v-if="spatialRefLink" :href="spatialRefLink" target="_blank">{{ result.projection }}</a>
-            <span v-else>{{ result.projection }}</span>
-        </div>
-        <div class="definition">
-            {{ result.def }}
-        </div>
-        (That gives a result {{ Math.round(result.distance) }}km from your target.)  
-    </div>
-  </div>
+<template lang="pug">
+  #guesser
+    h1 What the proj?
+    .preamble
+        | Do you have a Shapefile with no projection information? A GeoJSON with no CRS?
+        br
+        |         WhatTheProj can help you  guess the projection for a given point.
+    h4 Someone gave me this projected coordinate:
+    label X: 
+    input(type='text' v-model='x' v-on:change='change')
+    br
+    label Y: 
+    input(type='text' v-model='y' v-on:change='change')
+    br
+    h4 I think it <i>should</i> be somewhere near:
+    label Longitude: 
+    input(type='text' v-model='lon' v-on:change='change')
+    br
+    label Latitude: 
+    input(type='text' v-model='lat' v-on:change='change')
+    #submit(v-on:click='guess' v-show='x && y && lon && lat')
+        a(href='#')
+        b Guess!
+    #result(v-if="status === 'failed'")
+        | Oh dear. Couldn't find any projection that matched.
+    #result(v-if="status === 'thinking'")
+        | Thinking!
+    #result(v-if="status === 'found'")
+        | It might be...
+        .projection
+            a(v-if='spatialRefLink' :href='spatialRefLink' target='_blank') {{ result.projection }}
+            span(v-else='') {{ result.projection }}
+        .definition
+            | {{ result.def }}
+        | That gives a result {{ Math.round(result.distance) }}km from your target.
+    #other-results(v-if="status === 'found'")
+        | Or maybe:
+        table
+            tr(v-for='result in results.slice(1,10)')
+                td.projection
+                    a(v-if='spatialRefLink' :href='spatialRefLink' target='_blank') {{ result.projection }}
+                    span(v-else='') {{ result.projection }}
+                td.distance {{ Math.round(result.distance) }}km
+                td.definition {{ result.def }}
+                    
+                    
 </template>
 
 <script>
@@ -48,7 +57,7 @@ export default {
         y: dev ? 5807879.97589356 : undefined,
         lon: dev ? 144.650115 : undefined,
         lat: dev ? -37.897072 : undefined,
-        result: undefined,
+        results: undefined,
         status: 'waiting'
       }
   }, computed: {
@@ -58,6 +67,8 @@ export default {
         if (parts) {
             return `http://spatialreference.org/ref/${parts[1].toLowerCase()}/${parts[2]}/`
         }
+    }, result () {
+        return this.results && this.results[0];
     }
 
   }, methods: {
@@ -66,7 +77,8 @@ export default {
     },
     guess() {
       this.status = 'thinking';
-      this.result = guessProjection(+this.x, +this.y, +this.lon, +this.lat)[0];
+      this.results = guessProjection(+this.x, +this.y, +this.lon, +this.lat)
+        .filter(({ projection }) => !projection.match(/urn:ogc:def:crs:EPSG/));
       if (this.result) {
           this.status = 'found';
       } else {
@@ -111,15 +123,34 @@ a {
     color:pink;
 }
 
-.projection {
+#result .projection {
     font-size:40pt;
 }
 
-.definition {
+#result .definition {
     /* background:lightgrey; */
+    font-family:Consolas,monaco,'Courier New', Courier, monospace;
     color:maroon;
     padding:1em;
     text-align:center;
+    letter-spacing: -1px;
+}
+
+#other-results table {
+    text-align:left;
+    margin-left: auto;
+    margin-right:auto;
+    max-width:800px;
+}
+
+#other-results .projection {
+}
+
+#other-results .definition {
+    color:maroon;
+    font-size: 7pt;
+    font-family:Consolas,monaco,'Courier New', Courier, monospace;
+    letter-spacing: -1px;
 }
 
 .preamble {

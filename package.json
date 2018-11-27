@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start": "vue-cli-service serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "deploy": "npm run build  && rm dist/js/* && rm dist/css/* && cp -pr dist/* ../what-the-proj-gh-pages && (cd ../what-the-proj-gh-pages; git add js/*; git add css/*; git commit -am '.' && git push)",
@@ -10,6 +11,9 @@
   },
   "dependencies": {
     "guess-projection": "^0.3.0",
+    "pug": "^2.0.3",
+    "pug-loader": "^2.4.0",
+    "pug-plain-loader": "^1.0.0",
     "vue": "^2.5.17"
   },
   "devDependencies": {
