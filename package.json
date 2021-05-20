@@ -6,8 +6,9 @@
     "start": "vue-cli-service serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "deploy": "npm run build  && rm dist/js/* && rm dist/css/* && cp -pr dist/* ../what-the-proj-gh-pages && (cd ../what-the-proj-gh-pages; git add js/*; git add css/*; git commit -am '.' && git push)",
-    "lint": "vue-cli-service lint"
+    "deploy": "bash deploy.sh",
+    "lint": "vue-cli-service lint",
+    "postbuild": "react-snap"
   },
   "dependencies": {
     "guess-projection": "^0.3.0",
@@ -22,6 +23,14 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0-0",
+    "react-snap": "^1.23.0",
     "vue-template-compiler": "^2.5.17"
+  },
+  "reactSnap": {
+    "source": "dist",
+    "minifyHtml": {
+      "collapseWhitespace": false,
+      "removeComments": false
+    }
   }
 }
