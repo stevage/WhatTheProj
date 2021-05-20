@@ -50,112 +50,124 @@
 const dev = window.location.hash.match('#test');
 const guessProjection = require('guess-projection');
 export default {
-  name: 'Guesser',
-  data: function() { 
-    return {
-        x: dev ? 295114.372422643 : undefined,
-        y: dev ? 5807879.97589356 : undefined,
-        lon: dev ? 144.650115 : undefined,
-        lat: dev ? -37.897072 : undefined,
-        results: undefined,
-        status: 'waiting'
-      }
-  }, computed: {
-    spatialRefLink() {
-        const p = this.result.projection;
-        const parts = p.match(/^([^:]+):(.*)$/);
-        if (parts) {
-            return `http://spatialreference.org/ref/${parts[1].toLowerCase()}/${parts[2]}/`
-        }
-    }, result () {
-        return this.results && this.results[0];
-    }
-
-  }, methods: {
-    change() {
-        this.status = 'waiting';
+    name: 'Guesser',
+    data: function() {
+        return {
+            x: dev ? 295114.372422643 : undefined,
+            y: dev ? 5807879.97589356 : undefined,
+            lon: dev ? 144.650115 : undefined,
+            lat: dev ? -37.897072 : undefined,
+            results: undefined,
+            status: 'waiting',
+        };
     },
-    guess() {
-      this.status = 'thinking';
-      this.results = guessProjection(+this.x, +this.y, +this.lon, +this.lat)
-        .filter(({ projection }) => !projection.match(/urn:ogc:def:crs:EPSG/));
-      if (this.result) {
-          this.status = 'found';
-      } else {
-          this.status = 'failed';
-      }
+    computed: {
+        spatialRefLink() {
+            const p = this.result.projection;
+            const parts = p.match(/^([^:]+):(.*)$/);
+            if (parts) {
+                if (parts[1].match(/epsg/i)) {
+                    return `https://epsg.io/${parts[2]}`;
+                } else {
+                    return `http://spatialreference.org/ref/${parts[1].toLowerCase()}/${
+                        parts[2]
+                    }/`;
+                }
+            }
+        },
+        result() {
+            return this.results && this.results[0];
+        },
     },
-  },mounted () {
-    window.guesser = this;
-  },
-}
+    methods: {
+        change() {
+            this.status = 'waiting';
+        },
+        guess() {
+            this.status = 'thinking';
+            this.results = guessProjection(
+                +this.x,
+                +this.y,
+                +this.lon,
+                +this.lat
+            ).filter(
+                ({ projection }) => !projection.match(/urn:ogc:def:crs:EPSG/)
+            );
+            if (this.result) {
+                this.status = 'found';
+            } else {
+                this.status = 'failed';
+            }
+        },
+    },
+    mounted() {
+        window.guesser = this;
+    },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3 {
-  margin: 40px 0 0;
+    margin: 40px 0 0;
 }
 a {
-  color: #42b983;
+    color: #42b983;
 }
 
 #guesser {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  /* margin-top: 60px; */
-  font-size:16pt;
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    /* margin-top: 60px; */
+    font-size: 16pt;
 }
-
 
 #submit {
-  padding:1em;
-  cursor:pointer;
-  /* color:darkblue; */
-  /* text-decoration:underline; */
-  font-size:20pt;
-  
+    padding: 1em;
+    cursor: pointer;
+    /* color:darkblue; */
+    /* text-decoration:underline; */
+    font-size: 20pt;
 }
 #submit:hover {
-    color:pink;
+    color: pink;
 }
 
 #result .projection {
-    font-size:40pt;
+    font-size: 40pt;
 }
 
 #result .definition {
     /* background:lightgrey; */
-    font-family:Consolas,monaco,'Courier New', Courier, monospace;
-    color:maroon;
-    padding:1em;
-    text-align:center;
+    font-family: Consolas, monaco, 'Courier New', Courier, monospace;
+    color: maroon;
+    padding: 1em;
+    text-align: center;
     letter-spacing: -1px;
 }
 
 #other-results table {
-    text-align:left;
+    text-align: left;
     margin-left: auto;
-    margin-right:auto;
-    max-width:800px;
+    margin-right: auto;
+    max-width: 800px;
 }
 
 #other-results .projection {
 }
 
 #other-results .definition {
-    color:maroon;
+    color: maroon;
     font-size: 7pt;
-    font-family:Consolas,monaco,'Courier New', Courier, monospace;
+    font-family: Consolas, monaco, 'Courier New', Courier, monospace;
     letter-spacing: -1px;
 }
 
 .preamble {
-    font-size:12pt;
-    color:grey;
+    font-size: 12pt;
+    color: grey;
 }
-
 </style>
