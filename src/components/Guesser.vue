@@ -6,17 +6,17 @@
         br
         |         WhatTheProj can help you  guess the projection for a given point.
     h4 Someone gave me this projected coordinate:
-    label X: 
+    label X:
     input(type='text' v-model='x' v-on:change='change')
     br
-    label Y: 
+    label Y:
     input(type='text' v-model='y' v-on:change='change')
     br
     h4 I think it <i>should</i> be somewhere near:
-    label Longitude: 
+    label Longitude:
     input(type='text' v-model='lon' v-on:change='change')
     br
-    label Latitude: 
+    label Latitude:
     input(type='text' v-model='lat' v-on:change='change')
     #submit(v-on:click='guess' v-show='x && y && lon && lat')
         a(href='#')
@@ -28,7 +28,7 @@
     #result(v-if="status === 'found'")
         | It might be...
         .projection
-            a(v-if='spatialRefLink' :href='spatialRefLink' target='_blank') {{ result.projection }}
+            a(v-if='spatialRefLink(result.projection)' :href='spatialRefLink(result.projection)' target='_blank') {{ result.projection }}
             span(v-else='') {{ result.projection }}
         .definition
             | {{ result.def }}
@@ -38,12 +38,12 @@
         table
             tr(v-for='result in results.slice(1,10)')
                 td.projection
-                    a(v-if='spatialRefLink' :href='spatialRefLink' target='_blank') {{ result.projection }}
+                    a(v-if='spatialRefLink(result.projection)' :href='spatialRefLink(result.projection)' target='_blank') {{ result.projection }}
                     span(v-else='') {{ result.projection }}
                 td.distance {{ Math.round(result.distance) }}km
                 td.definition {{ result.def }}
-                    
-                    
+
+
 </template>
 
 <script>
@@ -62,19 +62,6 @@ export default {
         };
     },
     computed: {
-        spatialRefLink() {
-            const p = this.result.projection;
-            const parts = p.match(/^([^:]+):(.*)$/);
-            if (parts) {
-                if (parts[1].match(/epsg/i)) {
-                    return `https://epsg.io/${parts[2]}`;
-                } else {
-                    return `http://spatialreference.org/ref/${parts[1].toLowerCase()}/${
-                        parts[2]
-                    }/`;
-                }
-            }
-        },
         result() {
             return this.results && this.results[0];
         },
@@ -93,10 +80,23 @@ export default {
             ).filter(
                 ({ projection }) => !projection.match(/urn:ogc:def:crs:EPSG/)
             );
+            // console.log(this.results);
             if (this.result) {
                 this.status = 'found';
             } else {
                 this.status = 'failed';
+            }
+        },
+        spatialRefLink(p = this.result.projection) {
+            const parts = p.match(/^([^:]+):(.*)$/);
+            if (parts) {
+                if (parts[1].match(/epsg/i)) {
+                    return `https://epsg.io/${parts[2]}`;
+                } else {
+                    return `http://spatialreference.org/ref/${parts[1].toLowerCase()}/${
+                        parts[2]
+                    }/`;
+                }
             }
         },
     },
@@ -131,6 +131,9 @@ a {
     /* color:darkblue; */
     /* text-decoration:underline; */
     font-size: 20pt;
+    width: 10em;
+    margin: 1em auto;
+    border: 1px solid #42b983;
 }
 #submit:hover {
     color: pink;
